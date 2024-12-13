@@ -2,12 +2,14 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal.Internal;
 
 public class Movement : MonoBehaviour
 {
     [SerializeField] InputAction thrust;
     [SerializeField] InputAction rotation;
     [SerializeField] float thrustStrength = 100f;
+    [SerializeField] float rotationStrength = 100f;
 
     Rigidbody rb;
 
@@ -32,7 +34,22 @@ public class Movement : MonoBehaviour
     {
         float rotationInput = rotation.ReadValue<float>();
 
-        Debug.Log(rotationInput); //implement rotation 
+        if (rotationInput < 0)
+        {
+            ApplyRotation(rotationStrength);
+        }
+        else if (rotationInput > 0)
+        {
+            ApplyRotation(-rotationStrength);
+        }
+
+    }
+
+    private void ApplyRotation(float rotationCoef)
+    {
+        rb.freezeRotation = true;
+        transform.Rotate(Vector3.forward * rotationCoef * Time.fixedDeltaTime);
+        rb.freezeRotation = false;
     }
 
     private void ProcessThrust()
