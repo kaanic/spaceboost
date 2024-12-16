@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,7 +13,7 @@ public class CollisionHandler : MonoBehaviour
                 Debug.Log("Alright then.");
                 break;
             case "Finish":
-                Debug.Log("You are all done.");
+                LoadNextScene();
                 break;
             case "Fuel":
                 Debug.Log("Fueled.");
@@ -20,6 +21,19 @@ public class CollisionHandler : MonoBehaviour
             default:
                 ReloadLevel();
                 break;
+        }
+
+        void LoadNextScene()
+        {
+            int currentScene = SceneManager.GetActiveScene().buildIndex;
+
+            int nextScene = currentScene + 1;
+            if (nextScene == SceneManager.sceneCountInBuildSettings)
+            {
+                nextScene = 0;
+            }
+
+            SceneManager.LoadScene(nextScene);
         }
 
         void ReloadLevel()
