@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class CollisionHandler : MonoBehaviour
 {
+    [SerializeField] float levelLoadDelay = 2f;
+
     private void OnCollisionEnter(Collision other)
     {
         switch (other.gameObject.tag)
@@ -13,33 +15,45 @@ public class CollisionHandler : MonoBehaviour
                 Debug.Log("Alright then.");
                 break;
             case "Finish":
-                LoadNextScene();
-                break;
-            case "Fuel":
-                Debug.Log("Fueled.");
+                StartSuccessSequence();
                 break;
             default:
-                ReloadLevel();
+                StartCrashSequence();
                 break;
         }
+    }
 
-        void LoadNextScene()
+    void StartSuccessSequence()
+    {
+        // sfx + particles
+        GetComponent<Movement>().enabled = false;
+        Invoke("LoadNextLevel", levelLoadDelay);
+    }
+
+    void StartCrashSequence()
+    {
+        // sfx + particles
+        GetComponent<Movement>().enabled = false;
+        Invoke("ReloadLevel", levelLoadDelay);
+    }
+
+    void LoadNextScene()
+    {
+        int currentScene = SceneManager.GetActiveScene().buildIndex;
+
+        int nextScene = currentScene + 1;
+        if (nextScene == SceneManager.sceneCountInBuildSettings)
         {
-            int currentScene = SceneManager.GetActiveScene().buildIndex;
-
-            int nextScene = currentScene + 1;
-            if (nextScene == SceneManager.sceneCountInBuildSettings)
-            {
-                nextScene = 0;
-            }
-
-            SceneManager.LoadScene(nextScene);
+            nextScene = 0;
         }
 
-        void ReloadLevel()
-        {
-            int currentScene = SceneManager.GetActiveScene().buildIndex;
-            SceneManager.LoadScene(currentScene);
-        }
+        SceneManager.LoadScene(nextScene);
+    }
+
+    void ReloadLevel()
+    {
+        int currentScene = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentScene);
     }
 }
+
